@@ -8,9 +8,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.uberprojectauthservice.models.Passenger;
 import com.example.uberprojectauthservice.repositories.PassengerRepository;
 import com.example.uberprojectauthservice.utils.AuthPassengerDetails;
+import com.example.uberprojectentityservice.models.Passenger;
 
 /**
  * This class is responsible for loading the user in the form of userDetails object for auth

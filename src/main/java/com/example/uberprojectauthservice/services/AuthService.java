@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.uberprojectauthservice.dtos.PassengerDto;
 import com.example.uberprojectauthservice.dtos.PassengerSignupRequestDto;
-import com.example.uberprojectauthservice.models.Passenger;
 import com.example.uberprojectauthservice.repositories.PassengerRepository;
+import com.example.uberprojectentityservice.models.Passenger;
 
 @Service
 public class AuthService {
