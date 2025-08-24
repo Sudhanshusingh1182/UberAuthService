@@ -1,5 +1,6 @@
 package com.example.uberprojectauthservice.configurations;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,12 +13,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.example.uberprojectauthservice.filters.JwtAuthFilter;
 import com.example.uberprojectauthservice.services.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
 public class SpringSecurity  {
+	
+	@Autowired
+	private JwtAuthFilter jwtAuthFilter;
 	
 	@Bean
 	public UserDetailsService userDetailsService() {
@@ -28,10 +34,14 @@ public class SpringSecurity  {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 			return http
 					.csrf(csrf -> csrf.disable())
-					.authorizeRequests(
-					authorize -> authorize.requestMatchers("/api/v1/auth/signup/*").permitAll()
-					.requestMatchers("/api/v1/auth/signin/*").permitAll()
-					) .build();
+					.cors(cors -> cors.disable())
+					.authorizeHttpRequests(
+					auth -> auth.requestMatchers("/api/v1/auth/signup/*").permitAll()
+					.requestMatchers("/api/v1/auth/signin/*").permitAll()		
+					)
+					.authenticationProvider(authenticationProvider())
+					.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+					.build();
 	}
 	
 	@Bean

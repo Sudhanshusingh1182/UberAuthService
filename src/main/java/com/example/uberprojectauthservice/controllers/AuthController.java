@@ -1,8 +1,5 @@
 package com.example.uberprojectauthservice.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,6 +23,8 @@ import com.example.uberprojectauthservice.dtos.PassengerSignupRequestDto;
 import com.example.uberprojectauthservice.services.AuthService;
 import com.example.uberprojectauthservice.services.JwtService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,7 +55,7 @@ public class AuthController {
 	}
 	
 	@PostMapping("/signin/passenger")
-	public ResponseEntity<?> signIn(@RequestBody AuthRequestDto authRequestDto, HttpServletResponse httpServletResponse){
+	public ResponseEntity<?> signIn(@RequestBody AuthRequestDto authRequestDto,  HttpServletResponse httpServletResponse){
 		log.info("Request for sign in received: email:{}, password:{}", authRequestDto.getEmail(), authRequestDto.getPassword());
 		Authentication authentication= authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDto.getEmail(), authRequestDto.getPassword()));
 		
@@ -66,12 +65,23 @@ public class AuthController {
 					.httpOnly(true)
 					.secure(false)
 					.path("/")
-					.maxAge(cookieExpiry).build();
-			
+					.maxAge(7*24*3600).build();
+			  
 			httpServletResponse.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 			return new ResponseEntity<>(AuthResponseDto.builder().success(true).build(), HttpStatus.OK);
 		} else {
 			throw new UsernameNotFoundException("User not found");
 		}
+	}
+	
+	@GetMapping("/validate")
+	public ResponseEntity<?> validate (HttpServletRequest httpServletRequest){
+			log.info("Inside validate controller");
+		   for(Cookie cookie:   httpServletRequest.getCookies()) {
+			   log.info("{} : {} ", cookie.getName(),cookie.getValue());
+		   }
+			
+			return new ResponseEntity<>("success",HttpStatus.OK);
+			
 	}
 }
